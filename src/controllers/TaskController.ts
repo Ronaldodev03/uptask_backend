@@ -39,13 +39,37 @@ export class TaskController {
       }
 
       // la task debe pertenecer al project
-      if (task.project.toString() !== req.project.id) {
+      if (task.project.id.toString() !== req.project.id) {
         const error = new Error("Accion no válida");
         res.status(400).json({ error: error.message });
         return;
       }
 
       res.json(task);
+    } catch (error) {
+      res.status(500).json({ error: "Hubo un error" });
+    }
+  };
+
+  static updateTask = async (req: Request, res: Response) => {
+    const { taskId } = req.params;
+    try {
+      const task = await Task.findByIdAndUpdate(taskId, req.body);
+
+      if (!task) {
+        const error = new Error("Tarea no encontrada");
+        res.status(404).json({ error: error.message });
+        return;
+      }
+
+      // la task debe pertenecer al project
+      if (task.project.toString() !== req.project.id) {
+        const error = new Error("Accion no válida");
+        res.status(400).json({ error: error.message });
+        return;
+      }
+
+      res.send("Tarea Actualizada Correctamente");
     } catch (error) {
       res.status(500).json({ error: "Hubo un error" });
     }
