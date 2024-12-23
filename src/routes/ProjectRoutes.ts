@@ -2,6 +2,7 @@ import { Router } from "express";
 import { body, param } from "express-validator";
 import { ProjectController } from "../controllers/ProjectController";
 import { handleInputErrors } from "../middleware/validation";
+import { TaskController } from "../controllers/TaskController";
 
 const router = Router();
 
@@ -50,6 +51,27 @@ router.delete(
   param("id").isMongoId().withMessage("ID no válido"),
   handleInputErrors,
   ProjectController.deleteProject
+);
+
+/* ------------------------------------------------------------------- */
+
+/** Routes for tasks */
+
+router.post(
+  "/:projectId/tasks",
+  body("name").notEmpty().withMessage("El Nombre de la tarea es Obligatorio"),
+  body("description")
+    .notEmpty()
+    .withMessage("La descripción de la tarea es obligatoria"),
+  handleInputErrors,
+  TaskController.createTask
+);
+
+router.get(
+  "/:id",
+  param("id").isMongoId().withMessage("ID no válido"),
+  handleInputErrors,
+  ProjectController.getProjectById
 );
 
 export default router;
