@@ -1,10 +1,12 @@
-import mongoose, { Schema, Document } from "mongoose";
+import mongoose, { Schema, Document, Types, PopulatedDoc } from "mongoose";
+import { ITask } from "./Task";
 
 // ProjectType extending Document will have Mongoose document properties (like _id, timestamps, etc.)
 export interface IProject extends Document {
   projectName: string;
   clientName: string;
   description: string;
+  tasks: PopulatedDoc<ITask & Document>[];
 }
 
 const ProjectSchema: Schema = new Schema(
@@ -24,6 +26,12 @@ const ProjectSchema: Schema = new Schema(
       required: true,
       trim: true,
     },
+    tasks: [
+      {
+        type: Types.ObjectId,
+        ref: "Task", // <-- la referencia será el model de Task
+      },
+    ],
   },
   { timestamps: true }
 );
