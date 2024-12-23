@@ -1,10 +1,21 @@
 import mongoose, { Schema, Document, Types } from "mongoose";
 
+const taskStatus = {
+  PENDING: "pending",
+  ON_HOLD: "onHold",
+  IN_PROGRESS: "inProgress",
+  UNDER_REVIEW: "underReview",
+  COMPLETED: "completed",
+} as const;
+
+export type TaskStatus = (typeof taskStatus)[keyof typeof taskStatus];
+
 // ProjectType extending Document will have Mongoose document properties (like _id, timestamps, etc.)
 export interface ITask extends Document {
   name: string;
   description: string;
   project: Types.ObjectId;
+  status: TaskStatus;
 }
 
 export const TaskSchema: Schema = new Schema(
@@ -22,6 +33,11 @@ export const TaskSchema: Schema = new Schema(
     project: {
       type: Types.ObjectId,
       ref: "Project", // <-- la referencia será el model de Project
+    },
+    status: {
+      type: String,
+      enum: Object.values(taskStatus),
+      default: taskStatus.PENDING,
     },
   },
   { timestamps: true }
