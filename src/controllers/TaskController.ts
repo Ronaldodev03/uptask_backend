@@ -4,25 +4,25 @@ import Project from "../models/Project";
 
 export class TaskController {
   static createTask = async (req: Request, res: Response) => {
-    const { projectId } = req.params;
-
     try {
-      const project = await Project.findById(projectId);
+      const task = new Task(req.body); // name y description vienen en el body
+      task.project = req.project.id; // agrego el projectId a la task
+      req.project.tasks.push(task.id); // agrego la task al project
 
-      if (!project) {
-        const error = new Error("Proyecto no encontrado");
-        res.status(404).json({ error: error.message });
-        return;
-      }
-
-      const task = new Task(req.body);
-      task.project = project.id;
-      project.tasks.push(task.id);
-
-      await task.save();
-      await project.save();
+      await Promise.allSettled([task.save(), req.project.save()]);
 
       res.send("Tarea creada correctamente");
+    } catch (error) {
+      res.status(500).json({ error: "Hubo un error" });
+    }
+  };
+
+  static getProjectTasks = async (req: Request, res: Response) => {
+    try {
+      const tasks = await Task.find({ project: req.project.id }).populate(
+        "project"
+      ); // con populate me traigo la info de los projects
+      res.json(tasks);
     } catch (error) {
       res.status(500).json({ error: "Hubo un error" });
     }
