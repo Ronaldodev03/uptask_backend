@@ -20,11 +20,25 @@ export async function taskExists(
     const task = await Task.findById(taskId);
     if (!task) {
       const error = new Error("Tarea no encontrada");
-      return res.status(404).json({ error: error.message });
+      res.status(404).json({ error: error.message });
+      return;
     }
     req.task = task;
     next();
   } catch (error) {
     res.status(500).json({ error: "Hubo un error" });
   }
+}
+
+export function taskBelongsToProject(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (req.task.project.toString() !== req.project.id.toString()) {
+    const error = new Error("Acción no válida");
+    res.status(400).json({ error: error.message });
+    return;
+  }
+  next();
 }

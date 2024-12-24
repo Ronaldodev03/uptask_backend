@@ -4,7 +4,7 @@ import { ProjectController } from "../controllers/ProjectController";
 import { handleInputErrors } from "../middleware/validation";
 import { TaskController } from "../controllers/TaskController";
 import { projectExists } from "../middleware/project";
-import { taskExists } from "../middleware/task";
+import { taskBelongsToProject, taskExists } from "../middleware/task";
 
 const router = Router();
 
@@ -61,6 +61,7 @@ router.delete(
 
 router.param("projectId", projectExists); // todas las turas con ":projectId" tendrán este middleware
 router.param("taskId", taskExists); // todas las turas con ":taskId" tendrán este middleware
+router.param("taskId", taskBelongsToProject);
 
 router.post(
   "/:projectId/tasks",
