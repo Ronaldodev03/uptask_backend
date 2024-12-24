@@ -108,4 +108,35 @@ export class TaskController {
       console.log(error);
     }
   };
+
+  static updateStatus = async (req: Request, res: Response) => {
+    const { taskId } = req.params;
+
+    try {
+      const task = await Task.findById(taskId);
+
+      if (!task) {
+        const error = new Error("Tarea no encontrada");
+        res.status(404).json({ error: error.message });
+        return;
+      }
+
+      // la task debe pertenecer al project
+      if (task.project.toString() !== req.project.id) {
+        const error = new Error("Accion no válida");
+        res.status(400).json({ error: error.message });
+        return;
+      }
+
+      const { status } = req.body;
+
+      task.status = status;
+
+      await task.save();
+
+      res.send("Tarea Actualizada Correctamente");
+    } catch (error) {
+      console.log(error);
+    }
+  };
 }
