@@ -23,15 +23,10 @@ export class ProjectController {
   };
 
   static getProjectById = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    // const { projectId } = req.params;
     try {
-      const project = await Project.findById(id).populate("tasks");
-
-      if (!project) {
-        const error = new Error("Proyecto no encontrado");
-        res.status(404).json({ error: error.message });
-        return;
-      }
+      // const project = await Project.findById(projectId).populate("tasks");
+      const project = await Project.findById(req.project.id).populate("tasks");
 
       res.json(project);
     } catch (error) {
@@ -40,15 +35,10 @@ export class ProjectController {
   };
 
   static updateProject = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    //  const { projectId } = req.params;
     try {
-      const project = await Project.findById(id);
-
-      if (!project) {
-        const error = new Error("Proyecto no encontrado");
-        res.status(404).json({ error: error.message });
-        return;
-      }
+      // const project = await Project.findById(projectId);
+      const project = await Project.findById(req.project.id);
 
       project.clientName = req.body.clientName;
       project.projectName = req.body.projectName;
@@ -62,16 +52,11 @@ export class ProjectController {
   };
 
   static deleteProject = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    //const { projectId } = req.params;
 
     try {
-      const project = await Project.findById(id);
-
-      if (!project) {
-        const error = new Error("Proyecto no encontrado");
-        res.status(404).json({ error: error.message });
-        return;
-      }
+      //   const project = await Project.findById(projectId);
+      const project = await Project.findById(req.project.id);
 
       await project.deleteOne();
 
