@@ -5,8 +5,11 @@ import { handleInputErrors } from "../middleware/validation";
 import { TaskController } from "../controllers/TaskController";
 import { projectExists } from "../middleware/project";
 import { taskBelongsToProject, taskExists } from "../middleware/task";
+import { authenticate, hasAuthorization } from "../middleware/auth";
 
-const router = Router();
+const router = Router(); // <-- instancia de Router()
+
+router.use(authenticate); // <-- todas las rutas tendran este middleware (todos los endpoints de esta instancia de router)
 
 router.param("projectId", projectExists); // todas las turas con ":projectId" tendrán este middleware
 
@@ -47,6 +50,7 @@ router.put(
     .notEmpty()
     .withMessage("La Descripción del Proyecto es Obligatoria"),
   handleInputErrors,
+  hasAuthorization,
   ProjectController.updateProject
 );
 
@@ -54,6 +58,7 @@ router.delete(
   "/:projectId",
   param("projectId").isMongoId().withMessage("ID no válido"),
   handleInputErrors,
+  hasAuthorization,
   ProjectController.deleteProject
 );
 
@@ -66,6 +71,7 @@ router.param("taskId", taskBelongsToProject);
 
 router.post(
   "/:projectId/tasks",
+  hasAuthorization,
   body("name").notEmpty().withMessage("El Nombre de la tarea es Obligatorio"),
   body("description")
     .notEmpty()
@@ -91,6 +97,7 @@ router.put(
     .notEmpty()
     .withMessage("La descripción de la tarea es obligatoria"),
   handleInputErrors,
+  hasAuthorization,
   TaskController.updateTask
 );
 
@@ -98,6 +105,7 @@ router.delete(
   "/:projectId/tasks/:taskId",
   param("taskId").isMongoId().withMessage("ID no válido"),
   handleInputErrors,
+  hasAuthorization,
   TaskController.deleteTask
 );
 
